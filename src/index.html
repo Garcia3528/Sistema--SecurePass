@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePass - Gerenciador de Senhas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>SecurePass</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="addPasswordBtn">
+                    <i class="fas fa-plus"></i>
+                    Nova Senha
+                </button>
+                <button class="btn btn-secondary" id="generatePasswordBtn">
+                    <i class="fas fa-random"></i>
+                    Gerar Senha
+                </button>
+            </div>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar senhas...">
+            </div>
+            <div class="filter-options">
+                <select id="categoryFilter">
+                    <option value="">Todas as categorias</option>
+                    <option value="social">Redes Sociais</option>
+                    <option value="email">E-mail</option>
+                    <option value="banking">Bancário</option>
+                    <option value="work">Trabalho</option>
+                    <option value="personal">Pessoal</option>
+                    <option value="other">Outros</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Password List -->
+        <div class="password-grid" id="passwordGrid">
+            <!-- Passwords will be dynamically loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-lock"></i>
+            <h3>Nenhuma senha encontrada</h3>
+            <p>Comece adicionando sua primeira senha para manter seus dados seguros.</p>
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fas fa-plus"></i>
+                Adicionar Primeira Senha
+            </button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Password Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nova Senha</h2>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="siteName">Nome do Site/Serviço</label>
+                    <input type="text" id="siteName" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Usuário/E-mail</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="password-input">
+                        <input type="password" id="password" required>
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="category">Categoria</label>
+                    <select id="category" required>
+                        <option value="social">Redes Sociais</option>
+                        <option value="email">E-mail</option>
+                        <option value="banking">Bancário</option>
+                        <option value="work">Trabalho</option>
+                        <option value="personal">Pessoal</option>
+                        <option value="other">Outros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="url">URL (opcional)</label>
+                    <input type="url" id="url" placeholder="https://exemplo.com">
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notas (opcional)</label>
+                    <textarea id="notes" rows="3" placeholder="Informações adicionais..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Generator Modal -->
+    <div class="modal" id="generatorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Gerador de Senhas</h2>
+                <button class="close-btn" onclick="closeGeneratorModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="generator-content">
+                <div class="generated-password">
+                    <input type="text" id="generatedPassword" readonly>
+                    <button class="btn btn-icon" onclick="copyToClipboard('generatedPassword')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="generator-options">
+                    <div class="option-group">
+                        <label for="passwordLength">Comprimento: <span id="lengthValue">12</span></label>
+                        <input type="range" id="passwordLength" min="4" max="50" value="12">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox">
+                            <input type="checkbox" id="includeUppercase" checked>
+                            <span class="checkmark"></span>
+                            Maiúsculas (A-Z)
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" id="includeLowercase" checked>
+                            <span class="checkmark"></span>
+                            Minúsculas (a-z)
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" id="includeNumbers" checked>
+                            <span class="checkmark"></span>
+                            Números (0-9)
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" id="includeSymbols">
+                            <span class="checkmark"></span>
+                            Símbolos (!@#$%)
+                        </label>
+                    </div>
+                </div>
+                <div class="generator-actions">
+                    <button class="btn btn-secondary" onclick="generatePassword()">Gerar Nova</button>
+                    <button class="btn btn-primary" onclick="useGeneratedPassword()">Usar Esta Senha</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

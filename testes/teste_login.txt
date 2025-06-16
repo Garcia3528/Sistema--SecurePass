@@ -1,0 +1,4 @@
+Teste de fluxo de login:
+- Acessar página
+- Preencher usuário e senha
+- Clicar em Entrar
